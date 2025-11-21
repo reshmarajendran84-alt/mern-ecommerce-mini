@@ -8,6 +8,7 @@ Field name is "image" (from your React form)*/
 const {
     getProducts,//fetching products
     addProduct,//adding product
+    removeProduct,
     getProductById//getting product by id
 
 } = require("../controllers/productsController");
@@ -19,7 +20,15 @@ category filter
 sort
 pagination
 (You will add that inside the controller.)*/
+router.post('/add', adminAuth, upload.fields([
+    {name: 'image1', maxCount: 1},
+    {name: 'image2', maxCount: 1},
+    {name: 'image3', maxCount: 1},
+    {name: 'image4', maxCount: 1},]), addProduct);
+    
+router.post('/remove',adminAuth, removeProduct);
 router.get("/:id",getProductById);//✔ GET /api/products/:id → Get single product,-used for single product page
+router.post("/:id",getProductById)
 router.post('/', upload.single("image"), addProduct);
 
 /*This does 3 things in order:

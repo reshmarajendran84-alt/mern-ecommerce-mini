@@ -1,17 +1,34 @@
-const Product = require("../models/Product"); // Import Product model
-// const { search } = require("../routes/products");
-// ADD PRODUCT (with image upload)
+const Product = require("../models/Product"); 
+
 exports.addProduct = async (req, res) => {
   try {
-    const { name, price, category } = req.body; //You extract fields from the request body.
+    const { name, price, category ,description,sizes} = req.body; //You extract fields from the request body.
     const product = new Product({
       name,
-      price,
+            price: Number(price),
       category,
+                  description,
+                              sizes: JSON.parse(sizes),
+            image: imagesUrl,
+
+
       image: req.file ? req.file.filename : null /*req.file comes from Multer.
 If image uploaded → save filename
 If no image → save null*/,
     });
+    const image1 = req.files.image1 && req.files.image1[0]
+        const image2 = req.files.image2 && req.files.image2[0]
+        const image3 = req.files.image3 && req.files.image3[0]
+        const image4 = req.files.image4 && req.files.image4[0]
+
+        const images = [image1,image2, image3, image4].filter((item)=> item !== undefined);
+         let imagesUrl = await Promise.all(
+            images.map(async (item)=>{
+                let result = await cloudinary.uploader.upload(item.path,{resource_type: 'image'});
+                return result.secure_url
+            })
+        )
+
     await product.save(); //Save product to MongoDB
     res.json({ message: "Product added", product }); //Return the saved product
   } catch (err) {
@@ -54,6 +71,17 @@ page = 3 → skip = 10 */
     res.status(500).json({ error: "Server Error" });
   }
 };
+//function remove product
+const removeProduct = async (req, res) => {
+    try {
+        
+        await productModel.findByIdAndDelete(req.body.id);
+        res.json({success:true, message: 'Product Removed'});
+    } catch (error) {
+        console.log(error)
+        res.json({success: false, message: error.message})
+    }
+}
 // GET PRODUCT BY ID
 exports.getProductById = async (req, res) => {
   try {
